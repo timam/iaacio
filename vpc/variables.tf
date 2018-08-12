@@ -1,6 +1,6 @@
 variable "aws_region" {
   description = "Region for the VPC"
-  default = "us-west-1"
+  default = "us-east-1"
 }
 
 variable "vpc_cidr" {
@@ -25,7 +25,6 @@ variable "public_subnet_3" {
 }
 
 
-
 variable "private_subnet_1" {
   description = "CIDR for the private subnet"
   default = "10.0.11.0/24"
@@ -40,7 +39,6 @@ variable "private_subnet_3" {
   description = "CIDR for the private subnet"
   default = "10.0.13.0/24"
 }
-
 
 
 variable "db_subnet_1" {
@@ -58,7 +56,3 @@ variable "db_subnet_3" {
   description = "CIDR for the private subnet"
   default = "10.0.23.0/24"
 }
-
-
-
-
