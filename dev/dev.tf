@@ -1,5 +1,5 @@
 provider "aws" {
-  region     = "us-west-2"
+  region     = "us-east-1"
 }
 
 resource "aws_security_group" "allow-all" {
@@ -29,7 +29,7 @@ resource "aws_instance" "terraform-instance" {
   ami                    = "ami-4e79ed36"
   instance_type          = "t2.micro"
   vpc_security_group_ids = ["${aws_security_group.allow-all.id}"]
-  key_name               = "TimamKey"
+  key_name               = "TimamKeySaifAws"
 
   user_data = <<-EOF
 	#!/bin/bash#!/bin/bash
