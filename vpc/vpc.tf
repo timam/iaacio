@@ -4,128 +4,126 @@ provider "aws" {
 }
 
 
-# Define our VPC
+# Define VPC
 resource "aws_vpc" "default" {
   cidr_block = "${var.vpc_cidr}"
   enable_dns_hostnames = true
  
   tags {
-    Name = "test-vpc"
+    Name = "APPSMAV-VPC"
   }
 }
 
-# Define the public subnet
+# Define Public Subnets
 resource "aws_subnet" "public-subnet1" {
   vpc_id = "${aws_vpc.default.id}"
   cidr_block = "${var.public_subnet_1}"
-  availability_zone = "us-west-1a"
+  availability_zone = "us-east-1a"
  
   tags {
-    Name = "Public Subnet1"
+    Name = "10.0.1.0-public-us-east-1a"
   }
 }
 
-
-#resource "aws_subnet" "public-subnet2" {
-#  vpc_id = "${aws_vpc.default.id}"
-#  cidr_block = "${var.public_subnet_2}"
-#  availability_zone = "us-west-1b"
+resource "aws_subnet" "public-subnet2" {
+  vpc_id = "${aws_vpc.default.id}"
+  cidr_block = "${var.public_subnet_2}"
+  availability_zone = "us-east-1b"
  
-#  tags {
-#    Name = "Public Subnet2"
-#  }
-#}
+  tags {
+    Name = "10.0.2.0-public-us-east-1b"
+  }
+}
 
 resource "aws_subnet" "public-subnet3" {
   vpc_id = "${aws_vpc.default.id}"
   cidr_block = "${var.public_subnet_3}"
-  availability_zone = "us-west-1c"
+  availability_zone = "us-east-1c"
  
   tags {
-    Name = "Public Subnet3"
+    Name = "10.0.3.0-public-us-east-1c"
   }
 }
- 
-# Define the private subnet
+
+
+# Define Private Subnets
 resource "aws_subnet" "private-subnet1" {
   vpc_id = "${aws_vpc.default.id}"
   cidr_block = "${var.private_subnet_1}"
-  availability_zone = "us-west-1a"
+  availability_zone = "us-east-1a"
  
   tags {
-    Name = "Private Subnet1"
+    Name = "10.0.11.0-private-us-east-1a"
   }
 }
 
 
-#resource "aws_subnet" "private-subnet2" {
-#  vpc_id = "${aws_vpc.default.id}"
-#  cidr_block = "${var.private_subnet_2}"
-#  availability_zone = "us-west-1b"
- 
-#  tags {
-#    Name = "Private Subnet2"
-#  }
-#}
+resource "aws_subnet" "private-subnet2" {
+  vpc_id = "${aws_vpc.default.id}"
+  cidr_block = "${var.private_subnet_2}"
+  availability_zone = "us-east-1b"
+
+  tags {
+    Name = "10.0.12.0-private-us-east-1b"
+  }
+}
 
 
 resource "aws_subnet" "private-subnet3" {
   vpc_id = "${aws_vpc.default.id}"
   cidr_block = "${var.private_subnet_3}"
-  availability_zone = "us-west-1c"
+  availability_zone = "us-east-1c"
  
   tags {
-    Name = "Private Subnet3"
+    Name = "10.0.13.0-private-us-east-1c"
   }
 }
 
 
-
-# Define the DB subnet
+# Define DB Subnets
 resource "aws_subnet" "db-subnet1" {
   vpc_id = "${aws_vpc.default.id}"
   cidr_block = "${var.db_subnet_1}"
-  availability_zone = "us-west-1a"
+  availability_zone = "us-east-1a"
  
   tags {
-    Name = "db Subnet1"
+    Name = "10.0.21.0-db-subnet-us-east-1a"
   }
 }
 
-#resource "aws_subnet" "db-subnet2" {
-#  vpc_id = "${aws_vpc.default.id}"
-#  cidr_block = "${var.db_subnet_2}"
-#  availability_zone = "us-west-1b"
+resource "aws_subnet" "db-subnet2" {
+  vpc_id = "${aws_vpc.default.id}"
+  cidr_block = "${var.db_subnet_2}"
+  availability_zone = "us-east-1b"
  
-#  tags {
-#    Name = "db Subnet2"
-#  }
-#}
+  tags {
+    Name = "10.0.22.0-db-subnet-us-east-1b"
+  }
+}
 
 resource "aws_subnet" "db-subnet3" {
   vpc_id = "${aws_vpc.default.id}"
   cidr_block = "${var.db_subnet_3}"
-  availability_zone = "us-west-1c"
+  availability_zone = "us-east-1c"
 
   tags {
-    Name = "db Subnet3"
+    Name = "10.0.23.0-db-subnet-us-east-1c"
   }
 }
 
 
 
-# Define the internet gateway
+# Define Internet Gateway
 resource "aws_internet_gateway" "gw" {
   vpc_id = "${aws_vpc.default.id}"
  
   tags {
-    Name = "VPC IGW"
+    Name = "APPSMAV-VPC-IGW"
   }
 }
 
 
-
-# Define the route table
+# Define Route Table
 resource "aws_route_table" "public-rt" {
   vpc_id = "${aws_vpc.default.id}"
  
@@ -139,18 +137,16 @@ resource "aws_route_table" "public-rt" {
   }
 }
  
-# Assign the route table to the public Subnet
+# Assign Route Table to Public Subnets
 resource "aws_route_table_association" "public-rt1" {
   subnet_id = "${aws_subnet.public-subnet1.id}"
   route_table_id = "${aws_route_table.public-rt.id}"
 }
 
-
-#resource "aws_route_table_association" "public-rt2" {
-#  subnet_id = "${aws_subnet.public-subnet2.id}"
-#  route_table_id = "${aws_route_table.public-rt.id}"
-#}
-
+resource "aws_route_table_association" "public-rt2" {
+  subnet_id = "${aws_subnet.public-subnet2.id}"
+  route_table_id = "${aws_route_table.public-rt.id}"
+}
 
 resource "aws_route_table_association" "public-rt3" {
   subnet_id = "${aws_subnet.public-subnet3.id}"
@@ -158,12 +154,12 @@ resource "aws_route_table_association" "public-rt3" {
 }
 
 
+# Define DB Subnet
 resource  "aws_db_subnet_group" "db-subnet" {
   name       = "db-subnet"
-  subnet_ids = ["${aws_subnet.db-subnet1.id}", "${aws_subnet.db-subnet3.id}"]
+  subnet_ids = ["${aws_subnet.db-subnet1.id}", "${aws_subnet.db-subnet2.id}"]
 
   tags {
-    Name = "My DB subnet group"
+    Name = "APPSMAV-DB_SUBNET"
   }
 }
-
