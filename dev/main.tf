@@ -1,9 +1,28 @@
+# Define AWS as our provider
 provider "aws" {
   region     = "us-east-1"
 }
 
+# Collecting "mavs-vpc" ID
+data "aws_vpc" "mavs-vpc" {
+  filter {
+    name = "tag:Name"
+    values = ["mavs-vpc"]
+  }
+}
+
+#Collecting "public-us-east-1c" ID
+data "aws_subnet" "public-us-east-1c" {
+  filter {
+    name = "tag:Name"
+    values = ["10.0.3.0-public-us-east-1c"]
+  }
+}
+
+# Defining Security Group - Allowing All Ports
 resource "aws_security_group" "allow-all" {
-  name = "terraform-instance-sg"
+  name = "dev-instance-sg"
+  vpc_id = "${data.aws_vpc.mavs-vpc.id}"
 
   ingress {
     from_port   = 0
@@ -20,31 +39,32 @@ resource "aws_security_group" "allow-all" {
   }
 }
 
-resource "aws_eip_association" "eip_assoc" {
-  instance_id   = "${aws_instance.terraform-instance.id}"
-  allocation_id = "${aws_eip.terraform-instance-elastic-ip.id}"
-}
-
-resource "aws_instance" "terraform-instance" {
-  ami                    = "ami-4e79ed36"
+# Configure Dev Instance with proper subnet & vpc
+resource "aws_instance" "dev-instance" {
+  ami                    = "ami-759bc50a"
   instance_type          = "t2.micro"
+  subnet_id = "${data.aws_subnet.public-us-east-1c.id}"
   vpc_security_group_ids = ["${aws_security_group.allow-all.id}"]
-  key_name               = "TimamKeySaifAws"
+  key_name               = "dev-key"
 
+  # Srartup script
   user_data = <<-EOF
 	#!/bin/bash#!/bin/bash
 
 	EOF
 
   tags {
-    Name = "si-terraform-cluster"
+    Name = "dev-instance"
   }
 }
 
-resource "aws_eip" "terraform-instance-elastic-ip" {
+# Alocating Elastic IP
+resource "aws_eip" "dev-instance-elastic-ip" {
   vpc = true
 }
 
-output "public_ip" {
-  value = "${aws_instance.terraform-instance.public_ip}"
+# Associating Elastic IP with dev-instance
+resource "aws_eip_association" "eip_assoc" {
+  instance_id   = "${aws_instance.dev-instance.id}"
+  allocation_id = "${aws_eip.dev-instance-elastic-ip.id}"
 }
