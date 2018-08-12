@@ -10,7 +10,7 @@ resource "aws_vpc" "default" {
   enable_dns_hostnames = true
  
   tags {
-    Name = "APPSMAV-VPC"
+    Name = "mavs-vpc"
   }
 }
 
@@ -118,7 +118,7 @@ resource "aws_internet_gateway" "gw" {
   vpc_id = "${aws_vpc.default.id}"
  
   tags {
-    Name = "APPSMAV-VPC-IGW"
+    Name = "mavs-vpc-igw"
   }
 }
 
@@ -133,7 +133,7 @@ resource "aws_route_table" "public-rt" {
   }
  
   tags {
-    Name = "Public Subnet RT"
+    Name = "public-subnet-route-tabel"
   }
 }
  
@@ -160,6 +160,6 @@ resource  "aws_db_subnet_group" "db-subnet" {
   subnet_ids = ["${aws_subnet.db-subnet1.id}", "${aws_subnet.db-subnet2.id}"]
 
   tags {
-    Name = "APPSMAV-DB_SUBNET"
+    Name = "mavs-db-subnet"
   }
 }
