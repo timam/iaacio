@@ -11,12 +11,24 @@ data "aws_vpc" "mavs-vpc" {
   }
 }
 
-#Collecting "public-us-east-1c" ID
+# Collecting "public-us-east-1c" ID
 data "aws_subnet" "public-us-east-1c" {
   filter {
     name = "tag:Name"
     values = ["10.0.3.0-public-us-east-1c"]
   }
+}
+
+# Finding CentOS 7 AMI
+data "aws_ami" "centos" {
+  most_recent       = true
+  owners            = ["679593333241"]
+
+  filter {
+    name   = "name"
+    values = ["CentOS Linux 7 x86_64 HVM EBS*"]
+  }
+
 }
 
 # Defining Security Group - Allowing All Ports
@@ -41,7 +53,7 @@ resource "aws_security_group" "allow-all" {
 
 # Configure Dev Instance with proper subnet & vpc
 resource "aws_instance" "dev-instance" {
-  ami                    = "ami-759bc50a"
+  ami                    = "${data.aws_ami.centos.id}"
   instance_type          = "t2.micro"
   subnet_id = "${data.aws_subnet.public-us-east-1c.id}"
   vpc_security_group_ids = ["${aws_security_group.allow-all.id}"]
