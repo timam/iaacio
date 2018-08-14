@@ -60,10 +60,7 @@ resource "aws_instance" "dev-instance" {
   key_name               = "dev-key"
 
   # Srartup script
-  user_data = <<-EOF
-	#!/bin/bash#!/bin/bash
-
-	EOF
+  user_data = "${file("user-data.sh")}}"
 
   tags {
     Name = "dev-instance"
