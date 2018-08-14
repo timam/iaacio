@@ -3,6 +3,7 @@ provider "aws" {
   region     = "us-east-1"
 }
 
+
 # Collecting "mavs-vpc" ID
 data "aws_vpc" "mavs-vpc" {
   filter {
@@ -11,6 +12,7 @@ data "aws_vpc" "mavs-vpc" {
   }
 }
 
+
 # Collecting "public-us-east-1c" ID
 data "aws_subnet" "public-us-east-1c" {
   filter {
@@ -18,6 +20,13 @@ data "aws_subnet" "public-us-east-1c" {
     values = ["10.0.3.0-public-us-east-1c"]
   }
 }
+
+
+#Find Route53 Hosted Zone ID
+data "aws_route53_zone" "timamio" {
+  name         = "timam.io."
+}
+
 
 # Finding CentOS 7 AMI
 data "aws_ami" "centos" {
@@ -31,9 +40,12 @@ data "aws_ami" "centos" {
 
 }
 
+
+# Load startup script
 data "template_file" "user_data" {
   template = "${file("user-data.sh")}"
 }
+
 
 # Defining Security Group - Allowing All Ports
 resource "aws_security_group" "allow-all" {
@@ -55,6 +67,7 @@ resource "aws_security_group" "allow-all" {
   }
 }
 
+
 # Configure Dev Instance with proper subnet & vpc
 resource "aws_instance" "dev-instance" {
   ami                    = "${data.aws_ami.centos.id}"
@@ -69,13 +82,32 @@ resource "aws_instance" "dev-instance" {
   }
 }
 
+
 # Alocating Elastic IP
 resource "aws_eip" "dev-instance-elastic-ip" {
   vpc = true
 }
 
+
 # Associating Elastic IP with dev-instance
 resource "aws_eip_association" "eip_assoc" {
   instance_id   = "${aws_instance.dev-instance.id}"
   allocation_id = "${aws_eip.dev-instance-elastic-ip.id}"
+}
+
+# Adding Record to Route53
+resource "aws_route53_record" "master" {
+  zone_id = "${data.aws_route53_zone.timamio.zone_id}"
+  name    = "master.dev.timam.io"
+  type    = "A"
+  ttl     = "300"
+  records = ["${aws_eip.dev-instance-elastic-ip.public_ip}"]
+}
+
+resource "aws_route53_record" "branch" {
+  zone_id = "${data.aws_route53_zone.timamio.zone_id}"
+  name    = "branch.dev.timam.io"
+  type    = "A"
+  ttl     = "300"
+  records = ["${aws_eip.dev-instance-elastic-ip.public_ip}"]
 }
