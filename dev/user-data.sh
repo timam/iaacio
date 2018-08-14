@@ -49,7 +49,7 @@ sudo mkdir -p /var/www/master.dev.timam.io/
 sudo chown -R nginx:nginx /var/www/master.dev.timam.io/
 sudo cd /var/www/master.dev.timam.io/
 sudo git clone -b master https://github.com/timam/mavapp.git
-sudo cp /tmp/mavs-iaac/nginx-conf/master.dev.timam.io.conf /etc/nginx/sites-available/master.dev.timam.io.conf
+sudo cp /tmp/mavs-iaac/scripts/nginx-conf/master.dev.timam.io.conf /etc/nginx/sites-available/master.dev.timam.io.conf
 sudo ln -s /etc/nginx/sites-available/master.dev.timam.io.conf /etc/nginx/sites-enabled/master.dev.timam.io.conf
 
 
@@ -58,7 +58,7 @@ sudo mkdir -p /var/www/branch.dev.timam.io/
 sudo chown -R  nginx:nginx /var/www/branch.dev.timam.io/
 sudo cd /var/www/branch.dev.timam.io/
 sudo git clone -b branch-one https://github.com/timam/mavapp.git
-sudo cp /tmp/mavs-iaac/nginx-conf/branch.dev.timam.io.conf  /etc/nginx/sites-available/branch.dev.timam.io.conf
+sudo cp /tmp/mavs-iaac/scripts/nginx-conf/branch.dev.timam.io.conf  /etc/nginx/sites-available/branch.dev.timam.io.conf
 sudo ln -s /etc/nginx/sites-available/branch.dev.timam.io.conf /etc/nginx/sites-enabled/branch.dev.timam.io.conf
 
 
