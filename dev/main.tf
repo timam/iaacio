@@ -60,7 +60,10 @@ resource "aws_instance" "dev-instance" {
   key_name               = "dev-key"
 
   # Srartup script
-  user_data = "${file("user-data.sh")}}"
+  user_data = <<-EOF
+    #!/bin/bash
+      sudo yum install -y vim
+    EOF
 
   tags {
     Name = "dev-instance"
