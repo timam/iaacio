@@ -36,37 +36,31 @@ sudo mkdir /etc/nginx/sites-available
 sudo mkdir /etc/nginx/sites-enabled
 
 
-sed '88i include /etc/nginx/sites-enabled/*.conf;'  /etc/nginx/nginx.conf
-sed '89i server_names_hash_bucket_size 64;'  /etc/nginx/nginx.conf
+sed '88i include /etc/nginx/sites-enabled/*.conf;'  /etc/nginx/nginx.conf | sudo tee /etc/nginx/nginx.conf
+sed '89i server_names_hash_bucket_size 64;'  /etc/nginx/nginx.conf | sudo tee /etc/nginx/nginx.conf
 
 
 sudo chmod -R 755 /var/www
 
 cd /tmp
-sudo git clone https://github.com/timam/mavs-iaac.git master
+sudo git clone https://github.com/timam/mavs-iaac.git
 
+#Master Branch
 sudo mkdir -p /var/www/master.dev.timam.io/
 sudo chown -R nginx:nginx /var/www/master.dev.timam.io/
-sudo cd /var/www/master.dev.timam.io/
+cd /var/www/master.dev.timam.io/
 sudo git clone -b master https://github.com/timam/mavapp.git
-sudo cp /home/centos/mavs-iaac/scripts/nginx-conf/master.dev.timam.io.conf /etc/nginx/sites-available/master.dev.timam.io.conf
+sudo cp /tmp/mavs-iaac/scripts/nginx-conf/master.dev.timam.io.conf /etc/nginx/sites-available/master.dev.timam.io.conf
 sudo ln -s /etc/nginx/sites-available/master.dev.timam.io.conf /etc/nginx/sites-enabled/master.dev.timam.io.conf
 
 
 
 sudo mkdir -p /var/www/branch.dev.timam.io/
 sudo chown -R  nginx:nginx /var/www/branch.dev.timam.io/
-sudo cd /var/www/branch.dev.timam.io/
+cd /var/www/branch.dev.timam.io/
 sudo git clone -b branch-one https://github.com/timam/mavapp.git
-sudo cp /home/centos/mavs-iaac/scripts/nginx-conf/branch.dev.timam.io.conf  /etc/nginx/sites-available/branch.dev.timam.io.conf
+sudo cp /tmp/mavs-iaac/scripts/nginx-conf/branch.dev.timam.io.conf  /etc/nginx/sites-available/branch.dev.timam.io.conf
 sudo ln -s /etc/nginx/sites-available/branch.dev.timam.io.conf /etc/nginx/sites-enabled/branch.dev.timam.io.conf
 
 
 sudo systemctl restart nginx
-
-sudo cat <<EOF > /etc/hosts
-
-127.0.0.1 master.dev.timam.io
-127.0.0.1 branch.dev.timam.io
-
-EOF
