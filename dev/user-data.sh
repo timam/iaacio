@@ -3,17 +3,20 @@
 #Install Necessary Components
 sudo yum install -y epel-release yum-utils
 sudo yum update -y
-sudo yum install -y  wget vim git firewalld curl
+sudo yum install -y  wget vim git curl
 
 # Disable SELINUX
-sudo echo 0 > /sys/fs/selinux/enforce
+sudo setenforce 0
 
 #Install & Configure Mysql
 sudo yum install mariadb-server mariadb -y
 sudo systemctl start mariadb
 sudo systemctl enable mariadb
 sudo mysql -e "UPDATE mysql.user SET Password = PASSWORD('0987Threat') WHERE User = 'root'"
+sudo systemctl restart mariadb
 sudo echo "CREATE DATABASE appdb;" |  mysql -u root --password="0987Threat"
+sudo systemctl restart mariadb
+
 
 
 # Install & Configure PHP
@@ -32,24 +35,21 @@ sudo yum install -y nginx
 sudo mkdir /etc/nginx/sites-available
 sudo mkdir /etc/nginx/sites-enabled
 
-sudo ce /tmp
-sudo git clone https://github.com/timam/mavs-iaac.git
 
-
-#sudo vim /etc/nginx/nginx.conf.default
-##Add these lines to the end of the http {} block:
-#+ include /etc/nginx/sites-enabled/*.conf;
-#+ server_names_hash_bucket_size 64;
+sed '88i include /etc/nginx/sites-enabled/*.conf;'  /etc/nginx/nginx.conf
+sed '89i server_names_hash_bucket_size 64;'  /etc/nginx/nginx.conf
 
 
 sudo chmod -R 755 /var/www
 
+cd /tmp
+sudo git clone https://github.com/timam/mavs-iaac.git master
 
 sudo mkdir -p /var/www/master.dev.timam.io/
 sudo chown -R nginx:nginx /var/www/master.dev.timam.io/
 sudo cd /var/www/master.dev.timam.io/
 sudo git clone -b master https://github.com/timam/mavapp.git
-sudo cp /tmp/mavs-iaac/scripts/nginx-conf/master.dev.timam.io.conf /etc/nginx/sites-available/master.dev.timam.io.conf
+sudo cp /home/centos/mavs-iaac/scripts/nginx-conf/master.dev.timam.io.conf /etc/nginx/sites-available/master.dev.timam.io.conf
 sudo ln -s /etc/nginx/sites-available/master.dev.timam.io.conf /etc/nginx/sites-enabled/master.dev.timam.io.conf
 
 
@@ -58,8 +58,15 @@ sudo mkdir -p /var/www/branch.dev.timam.io/
 sudo chown -R  nginx:nginx /var/www/branch.dev.timam.io/
 sudo cd /var/www/branch.dev.timam.io/
 sudo git clone -b branch-one https://github.com/timam/mavapp.git
-sudo cp /tmp/mavs-iaac/scripts/nginx-conf/branch.dev.timam.io.conf  /etc/nginx/sites-available/branch.dev.timam.io.conf
+sudo cp /home/centos/mavs-iaac/scripts/nginx-conf/branch.dev.timam.io.conf  /etc/nginx/sites-available/branch.dev.timam.io.conf
 sudo ln -s /etc/nginx/sites-available/branch.dev.timam.io.conf /etc/nginx/sites-enabled/branch.dev.timam.io.conf
 
 
 sudo systemctl restart nginx
+
+sudo cat <<EOF > /etc/hosts
+
+127.0.0.1 master.dev.timam.io
+127.0.0.1 branch.dev.timam.io
+
+EOF
