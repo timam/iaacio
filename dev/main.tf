@@ -31,6 +31,10 @@ data "aws_ami" "centos" {
 
 }
 
+data "template_file" "user_data" {
+  template = "${file("user-data.sh")}"
+}
+
 # Defining Security Group - Allowing All Ports
 resource "aws_security_group" "allow-all" {
   name = "dev-instance-sg"
@@ -58,12 +62,7 @@ resource "aws_instance" "dev-instance" {
   subnet_id = "${data.aws_subnet.public-us-east-1c.id}"
   vpc_security_group_ids = ["${aws_security_group.allow-all.id}"]
   key_name               = "dev-key"
-
-  # Srartup script
-  user_data = <<-EOF
-    #!/bin/bash
-      sudo yum install -y vim
-    EOF
+  user_data = "${data.template_file.user_data.rendered}"
 
   tags {
     Name = "dev-instance"
