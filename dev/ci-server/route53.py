@@ -1,4 +1,6 @@
-import boto3, requests
+import os, boto3, requests
+
+print(os.environ['BUILD_ID'])
 
 def get_public_ip():
     r = requests.get('http://icanhazip.com')
