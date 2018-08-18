@@ -1,12 +1,18 @@
 import os, boto3, requests
 
-print(os.environ['BUILD_ID'])
+gimme_origin = os.environ['GIT_BRANCH']
+branch = gimme_origin.replace('origin/', '')
+
+print(branch)
+
 
 def get_public_ip():
     r = requests.get('http://icanhazip.com')
     return r.text.rstrip()
 
-domain = "test.timam.io."
+domain = "swin-"+branch+".timam.io."
+print(domain)
+
 srv_ip = get_public_ip()
 
 
